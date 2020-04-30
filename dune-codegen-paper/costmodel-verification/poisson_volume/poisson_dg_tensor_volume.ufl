@@ -1,0 +1,16 @@
+x = SpatialCoordinate(cell)
+
+I = Identity(3)
+A = as_matrix([[x[i]*x[j] + I[i,j] for j in range(3)] for i in range(3)])
+f = -6.
+c = 10.
+
+V = FiniteElement("DG", cell, degree)
+
+u = TrialFunction(V)
+v = TestFunction(V)
+
+n = FacetNormal(cell)('+')
+
+r = (inner(A*grad(u), grad(v)) + (c*u-f)*v)*dx
+

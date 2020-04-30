@@ -1,0 +1,9 @@
+CMAKE_FLAGS="-DDUNE_SYMLINK_TO_SOURCE_TREE=1
+             -DCMAKE_BUILD_TYPE=Release
+             -DCMAKE_CXX_FLAGS='-fabi-version=0 -march=haswell -ffast-math'
+             -DDUNE_PYTHON_VIRTUALENV_SETUP=1
+             -DDUNE_PYTHON_ALLOW_GET_PIP=1
+             -DDUNE_PYTHON_FORCE_PYTHON3=1
+             -DDUNE_CODEGEN_BENCHMARK_EXECUTION_WRAPPER=/home/dkempf/dune-codegen-paper-software/dune-codegen/bin/donkey_benchmark_execution_wrapper.py
+             -DDUNE_CODEGEN_BENCHMARK_COMPILATION_WRAPPER=/home/dkempf/dune-codegen-paper-software/dune-codegen/bin/donkey_benchmark_compilation_wrapper.sh
+             "

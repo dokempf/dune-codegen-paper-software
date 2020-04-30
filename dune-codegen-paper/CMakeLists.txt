@@ -22,10 +22,11 @@ dune_project()
 
 dune_enable_all_packages()
 
-add_subdirectory(src)
-add_subdirectory(dune)
-add_subdirectory(doc)
-add_subdirectory(cmake/modules)
+add_subdirectory(costmodel-verification)
+add_subdirectory(haswell-poisson)
+add_subdirectory(haswell-stokes)
+add_subdirectory(skylake-poisson)
+add_subdirectory(skylake-stokes)
 
 # finalize the dune project, e.g. generating config.h etc.
 finalize_dune_project(GENERATE_CONFIG_H_CMAKE)

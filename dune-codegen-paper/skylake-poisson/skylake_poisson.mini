@@ -1,0 +1,62 @@
+__name = skylake_poisson_{__exec_suffix}
+__exec_suffix = h{horizontal}_v{vertical}_deg{formcompiler.ufl_variants.degree}_{opcount_suffix}
+
+opcount_suffix = opcount, nonopcount | expand opcount
+
+horizontal = 4, 2, 1 | expand vecstrats
+vertical = 2, 4, 8 | expand vecstrats
+
+# Calculate the size of the grid to equlibritate it to 100 MB/rank
+# Input parameters
+dim = 3
+mbperrank = 100
+ranks = 40
+floatingbytes = 8
+
+# Metaini Calculations
+memperrank = {mbperrank} * 1048576 | eval
+dofsperdir = {formcompiler.ufl_variants.degree} + 1 | eval
+celldofs = {dofsperdir} ** {dim} | eval
+cellsperrank = {memperrank} / ({floatingbytes} * {celldofs}) | eval
+cellsperdir = {cellsperrank} ** (1/{dim}) | eval | toint
+firstdircells = {ranks} * {cellsperdir} | eval
+dimminusone = {dim} - 1 | eval
+ones = 1 | repeat {dimminusone}
+otherdircells = {cellsperdir} | repeat {dimminusone}
+
+# Setup the grid!
+extension = 1.0 | repeat {dim}
+cells = {firstdircells} {otherdircells}
+partitioning = {ranks} {ones}
+periodic = true | repeat {dim}
+
+# Set up the timing identifier
+identifier = h{horizontal}_v{vertical}_deg{formcompiler.ufl_variants.degree}
+
+[wrapper.vtkcompare]
+name = {__name}
+extension = vtu
+
+[formcompiler]
+instrumentation_level = 2
+opcounter = 1, 0 | expand opcount
+performance_measuring = 0, 1 | expand opcount
+architecture = skylake
+
+[formcompiler.r]
+fastdg = 1
+sumfact = 1
+vectorization_quadloop = 1
+vectorization_strategy = explicit
+vectorization_horizontal = {horizontal}
+vectorization_vertical = {vertical}
+vectorization_allow_quadrature_changes = 1
+quadrature_order = {formcompiler.ufl_variants.degree} * 2 | eval
+generate_jacobians = 0
+matrix_free = 1
+geometry_mixins = sumfact_equidistant
+sumfact_on_boundary = 0
+
+[formcompiler.ufl_variants]
+cell = hexahedron
+degree = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 | expand

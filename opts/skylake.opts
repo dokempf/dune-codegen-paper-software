@@ -1,0 +1,11 @@
+CMAKE_FLAGS="-G'Eclipse CDT4 - Unix Makefiles'
+             -DDUNE_SYMLINK_TO_SOURCE_TREE=1
+             -DCMAKE_BUILD_TYPE=Release
+             -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
+             -DCMAKE_C_COMPILER=/usr/bin/gcc-7
+             -DCMAKE_CXX_FLAGS='-march=skylake-avx512 -ffast-math -DMAX_VECTOR_SIZE=512'
+             -DDUNE_PYTHON_VIRTUALENV_SETUP=1
+             -DDUNE_PYTHON_ALLOW_GET_PIP=1
+             -DDUNE_PYTHON_FORCE_PYTHON3=1
+             -DDUNE_CODEGEN_BENCHMARK_EXECUTION_WRAPPER=/home/dkempf/dune-codegen-paper-software/dune-codegen-paper/autotune-scripts/skylake_benchmark_wrapper.py
+             "

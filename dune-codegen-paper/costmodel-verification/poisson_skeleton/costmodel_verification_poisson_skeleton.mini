@@ -1,0 +1,63 @@
+__name = costmodel_verification_poisson_skeleton_{__exec_suffix}
+__exec_suffix = strategy{sample_str}_{opcount_suffix}
+opcount_suffix = opcount, nonopcount | expand opcount
+
+# All keys that define the sampling range/rate for this costmodel verification plot thingy
+num_samples = 101
+mincost = 7500
+maxcost = 40000
+sample = 0 | range {num_samples} | expand | toint
+sample_str = {sample} | zfill 4
+target = {mincost} + ({sample} / ({num_samples} - 1)) * ({maxcost} - {mincost}) | eval
+
+# Calculate the size of the grid to equlibritate it to 100 MB/rank
+# Input parameters
+dim = 3
+mbperrank = 100
+ranks = 32
+floatingbytes = 8
+
+# Metaini Calculations
+memperrank = {mbperrank} * 1048576 | eval
+dofsperdir = {formcompiler.ufl_variants.degree} + 1 | eval
+celldofs = {dofsperdir} ** {dim} | eval
+cellsperrank = {memperrank} / ({floatingbytes} * {celldofs}) | eval
+cellsperdir = {cellsperrank} ** (1/{dim}) | eval | toint
+firstdircells = {ranks} * {cellsperdir} | eval
+dimminusone = {dim} - 1 | eval
+ones = 1 | repeat {dimminusone}
+otherdircells = {cellsperdir} | repeat {dimminusone}
+
+# Setup the grid!
+extension = 1.0 | repeat {dim}
+cells = {firstdircells} {otherdircells}
+partitioning = {ranks} {ones}
+periodic = true | repeat {dim}
+
+# Set up the timing identifier
+identifier = deg{formcompiler.ufl_variants.degree}_strategy{sample_str}
+
+[wrapper.vtkcompare]
+name = {__name}
+extension = vtu
+
+[formcompiler]
+instrumentation_level = 2
+opcounter = 1, 0 | expand opcount
+performance_measuring = 0, 1 | expand opcount
+
+[formcompiler.r]
+fastdg = 1
+sumfact = 1
+vectorization_quadloop = 1
+vectorization_strategy = target
+vectorization_allow_quadrature_changes = 1
+vectorization_target = {target}
+quadrature_order = {formcompiler.ufl_variants.degree} * 2 | eval
+assure_statement_ordering = 1
+generate_jacobians = 0
+matrix_free = 0
+
+[formcompiler.ufl_variants]
+cell = hexahedron
+degree = 4

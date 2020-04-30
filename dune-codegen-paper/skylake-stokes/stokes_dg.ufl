@@ -1,0 +1,36 @@
+
+cell = hexahedron
+
+x = SpatialCoordinate(cell)
+g_v = as_vector((4.*x[1]*(1.-x[1]), 0.0, 0.0))
+bctype = conditional(x[0] < 1. - 1e-8, 1, 0)
+
+V = VectorElement("DG", cell, v_degree)
+P = FiniteElement("DG", cell, p_degree)
+TH = V * P
+
+v, q = TestFunctions(TH)
+u, p = TrialFunctions(TH)
+
+ds = ds(subdomain_id=1, subdomain_data=bctype)
+
+n = FacetNormal(cell)('+')
+eps = -1.0
+sigma = 1.0
+h_e = Min(CellVolume(cell)('+'), CellVolume(cell)('-')) / FacetArea(cell)
+
+r = inner(grad(u), grad(v))*dx \
+  - p*div(v)*dx \
+  - q*div(u)*dx \
+  - inner(avg(grad(u))*n, jump(v))*dS \
+  + sigma / h_e * inner(jump(u), jump(v))*dS \
+  + eps * inner(avg(grad(v))*n, jump(u))*dS \
+  + avg(p)*inner(jump(v), n)*dS \
+  + avg(q)*inner(jump(u), n)*dS \
+  - inner(grad(u)*n, v)*ds \
+  + sigma / h_e * inner(u-g_v, v)*ds \
+  + eps * inner(grad(v)*n, u-g_v)*ds \
+  + p*inner(v, n)*ds \
+  + q*inner(u-g_v, n)*ds
+
+exact_solution = g_v, 8*(1.-x[0])

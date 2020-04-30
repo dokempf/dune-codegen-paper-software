@@ -1,0 +1,59 @@
+__name = haswell_stokes_{__exec_suffix}
+__exec_suffix = deg{formcompiler.ufl_variants.v_degree}_{opcount_suffix}_level{formcompiler.instrumentation_level}
+
+opcount_suffix = opcount, nonopcount | expand opcount
+{formcompiler.instrumentation_level} != 3 and {formcompiler.opcounter} == 1 | exclude
+
+# Calculate the size of the grid to equlibritate it to 100 MB/rank
+# Input parameters
+dim = 3
+mbperrank = 100
+ranks = 32
+floatingbytes = 8
+
+# Metaini Calculations
+memperrank = {mbperrank} * 1048576 | eval
+vdofsperdir = {formcompiler.ufl_variants.v_degree} + 1 | eval
+pdofsperdir = {formcompiler.ufl_variants.p_degree} + 1 | eval
+celldofs = {dim} * {vdofsperdir} ** {dim} + {pdofsperdir} ** {dim} | eval
+cellsperrank = {memperrank} / ({floatingbytes} * {celldofs}) | eval
+cellsperdir = {cellsperrank} ** (1/{dim}) | eval | toint
+firstdircells = {ranks} * {cellsperdir} | eval
+dimminusone = {dim} - 1 | eval
+ones = 1 | repeat {dimminusone}
+otherdircells = {cellsperdir} | repeat {dimminusone}
+
+# Set up the timing identifier
+identifier = stokes_dg_deg{formcompiler.ufl_variants.v_degree}
+
+# Setup the grid!
+extension = 1.0 | repeat {dim}
+cells = {firstdircells} {otherdircells}
+partitioning = {ranks} {ones}
+periodic = true | repeat {dim}
+
+[wrapper.vtkcompare]
+name = {__name}
+extension = vtu
+
+[formcompiler]
+instrumentation_level = 2, 3 | expand level
+opcounter = 1, 0 | expand opcount
+performance_measuring = 0, 1 | expand opcount
+
+[formcompiler.r]
+fastdg = 1
+sumfact = 1
+vectorization_quadloop = 1
+vectorization_strategy = autotune
+vectorization_allow_quadrature_changes = 1
+quadrature_order = {formcompiler.ufl_variants.v_degree} * 2 | eval
+generate_jacobians = 0
+matrix_free = 1
+geometry_mixins = sumfact_equidistant
+sumfact_on_boundary = 0
+
+[formcompiler.ufl_variants]
+cell = hexahedron
+v_degree = 2, 3, 4, 5, 6, 7, 8, 9, 10 | expand degree
+p_degree = {formcompiler.ufl_variants.v_degree} - 1 | eval
