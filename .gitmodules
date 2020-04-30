@@ -1,0 +1,36 @@
+[submodule "dune-alugrid"]
+	path = dune-alugrid
+	url = https://gitlab.dune-project.org/extensions/dune-alugrid.git
+[submodule "dune-codegen"]
+	path = dune-codegen
+	url = https://gitlab.dune-project.org/extensions/dune-codegen.git
+[submodule "dune-common"]
+	path = dune-common
+	url = https://gitlab.dune-project.org/core/dune-common.git
+[submodule "dune-istl"]
+	path = dune-istl
+	url = https://gitlab.dune-project.org/core/dune-istl.git
+[submodule "dune-grid"]
+	path = dune-grid
+	url = https://gitlab.dune-project.org/core/dune-grid.git
+[submodule "dune-geometry"]
+	path = dune-geometry
+	url = https://gitlab.dune-project.org/core/dune-geometry.git
+[submodule "dune-localfunctions"]
+	path = dune-localfunctions
+	url = https://gitlab.dune-project.org/core/dune-localfunctions.git
+[submodule "dune-pdelab"]
+	path = dune-pdelab
+	url = https://gitlab.dune-project.org/pdelab/dune-pdelab.git
+[submodule "dune-functions"]
+	path = dune-functions
+	url = https://gitlab.dune-project.org/staging/dune-functions.git
+[submodule "dune-typetree"]
+	path = dune-typetree
+	url = https://gitlab.dune-project.org/staging/dune-typetree.git
+[submodule "dune-testtools"]
+	path = dune-testtools
+	url = https://gitlab.dune-project.org/quality/dune-testtools.git
+[submodule "dune-opcounter"]
+	path = dune-opcounter
+	url = https://gitlab.dune-project.org/dominic/dune-opcounter.git

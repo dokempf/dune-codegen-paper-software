@@ -1,0 +1,10 @@
+################################
+# Dune module information file #
+################################
+
+#Name of the module
+Module: dune-codegen-paper
+Version: 0.0
+Maintainer: dominic.kempf@iwr.uni-heidelberg.de
+#depending on
+Depends: dune-codegen
